@@ -30,11 +30,13 @@ To generate documentation, install [graphviz](http://www.graphviz.org/) and [dox
 
 ## Usage
 
-1. `clang -c -g -emit-llvm prog.c`
-2. `llvm-epp prog.bc -o prog`
-3. `clang prog.epp.bc -o exe -lepp-rt`
-4. `./exe`
-5. `llvm-epp -p=path-profile-results.txt prog.bc`
+```
+clang -c -g -emit-llvm prog.c \
+&& llvm-epp prog.bc -o path-profile.txt \
+&& clang prog.epp.bc -o exe -lepp-rt \
+&& ./exe \
+&& llvm-epp -p=path-profile.txt prog.bc 
+```
 
 ## Known Issues 
 
