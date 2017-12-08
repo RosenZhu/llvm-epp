@@ -38,6 +38,12 @@ clang -c -g -emit-llvm prog.c \
 
 1. Instrumentation cannot be placed along computed indirect branch target edges. [This](http://blog.llvm.org/2010/01/address-of-label-and-indirect-branches.html) blog post describes the issue under the section "How does this extension interact with critical edge splitting?".
 
+## Roadmap
+
+1. Re-enable optimal event counting  
+2. Add benchmarking hooks  
+3. Add unit tests  
+
 ## License 
 
 The MIT License

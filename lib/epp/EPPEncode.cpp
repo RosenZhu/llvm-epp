@@ -1,6 +1,5 @@
 #define DEBUG_TYPE "epp_encode"
 #include "llvm/ADT/MapVector.h"
-#include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/ADT/SCCIterator.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/Statistic.h"
@@ -63,99 +62,6 @@ void EPPEncode::releaseMemory() {
     LI = nullptr;
     numPaths.clear();
     AG.clear();
-}
-
-void postorderHelper(BasicBlock *toVisit, vector<BasicBlock *> &blocks,
-                     DenseSet<BasicBlock *> &seen,
-                     const set<BasicBlock *> &SCCBlocks) {
-    seen.insert(toVisit);
-    for (auto s = succ_begin(toVisit), e = succ_end(toVisit); s != e; ++s) {
-
-        // Don't need to worry about backedge successors as their targets
-        // will be visited already and will fail the first condition check.
-
-        if (!seen.count(*s) && (SCCBlocks.find(*s) != SCCBlocks.end())) {
-            postorderHelper(*s, blocks, seen, SCCBlocks);
-        }
-    }
-    blocks.push_back(toVisit);
-}
-
-vector<BasicBlock *> postOrder(BasicBlock *Block,
-                               const set<BasicBlock *> &SCCBlocks) {
-    vector<BasicBlock *> ordered;
-    DenseSet<BasicBlock *> seen;
-    postorderHelper(Block, ordered, seen, SCCBlocks);
-    return ordered;
-}
-
-vector<BasicBlock *> postOrder(Function &F) {
-    vector<BasicBlock *> PostOrderBlocks;
-
-    // Add all the basicblocks in the function to a set.
-    SetVector<BasicBlock *> BasicBlocks;
-    for (auto &BB : F)
-        BasicBlocks.insert(&BB);
-
-    for (auto I = scc_begin(&F), IE = scc_end(&F); I != IE; ++I) {
-
-        // Obtain the vector of BBs
-        const std::vector<BasicBlock *> &SCCBBs = *I;
-
-        // Find an entry block into the current SCC as the starting point
-        // of the DFS for the postOrder traversal. Now the *entry* block
-        // should have predecessors in other SCC's which are topologically
-        // before this SCC, i.e blocks not seen yet.
-
-        // Remove each basic block which we encounter in the current SCC.
-        // Remaining blocks must be topologically earlier than the blocks
-        // we have seen already.
-        DEBUG(errs() << "SCC: ");
-        for (auto *BB : SCCBBs) {
-            DEBUG(errs() << BB->getName() << " ");
-            BasicBlocks.remove(BB);
-        }
-        DEBUG(errs() << "\n");
-
-        // Find the first block in the current SCC to have a predecessor
-        // in the remaining blocks. This becomes the starting block for the DFS
-        // Exception: SCC size = 1.
-
-        BasicBlock *Start = nullptr;
-
-        for (int i = 0; i < SCCBBs.size() && Start == nullptr; i++) {
-            auto BB = SCCBBs[i];
-            for (auto P = pred_begin(BB), E = pred_end(BB); P != E; P++) {
-                if (BasicBlocks.count(*P)) {
-                    Start = BB;
-                    break;
-                }
-            }
-        }
-
-        if (!Start) {
-            Start = SCCBBs[0];
-            assert(SCCBBs.size() == 1 &&
-                   "Should be entry block only which has no preds");
-        }
-
-        set<BasicBlock *> SCCBlocksSet(SCCBBs.begin(), SCCBBs.end());
-        auto blocks = postOrder(Start, SCCBlocksSet);
-
-        assert(SCCBBs.size() == blocks.size() &&
-               "Could not discover all blocks");
-
-        for (auto *BB : blocks) {
-            PostOrderBlocks.push_back(BB);
-        }
-    }
-
-    DEBUG(errs() << "Post Order Blocks: \n");
-    for (auto &POB : PostOrderBlocks)
-        DEBUG(errs() << POB->getName() << " ");
-    DEBUG(errs() << "\n");
-
-    return PostOrderBlocks;
 }
 
 DenseSet<pair<const BasicBlock *, const BasicBlock *>>
