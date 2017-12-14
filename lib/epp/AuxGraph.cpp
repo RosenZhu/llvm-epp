@@ -17,9 +17,9 @@ namespace {
 
 SmallVector<BasicBlock *, 32> postOrder(Function &F) {
     SmallVector<BasicBlock *, 32> PostOrderBlocks;
-    for(auto I = po_iterator<Function*>::begin(&F); 
-        I != po_iterator<Function*>::end(&F); I++) {
-      PostOrderBlocks.push_back(*I);
+    for (auto I = po_iterator<Function *>::begin(&F);
+         I != po_iterator<Function *>::end(&F); I++) {
+        PostOrderBlocks.push_back(*I);
     }
 
     DEBUG(errs() << "Post Order Blocks: \n");
@@ -30,8 +30,7 @@ SmallVector<BasicBlock *, 32> postOrder(Function &F) {
     return PostOrderBlocks;
 }
 
-}
-
+} // namespace
 
 /// Construct the auxiliary graph representation from the original
 /// function control flow graph. At this stage the CFG and the

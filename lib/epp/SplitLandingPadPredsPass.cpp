@@ -25,7 +25,7 @@ void SplitLandingPadPreds(Function &F) {
         }
     }
 }
-}
+} // namespace
 
 bool SplitLandingPadPredsPass::runOnModule(Module &M) {
     for (auto &F : M) {

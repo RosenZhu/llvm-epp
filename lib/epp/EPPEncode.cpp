@@ -50,7 +50,7 @@ void dumpDotGraph(StringRef filename, const AuxGraph &AG) {
     AG.dot(out);
     out.close();
 }
-}
+} // namespace
 
 bool EPPEncode::runOnFunction(Function &F) {
     LI = &getAnalysis<LoopInfoWrapperPass>().getLoopInfo();

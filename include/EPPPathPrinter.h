@@ -27,6 +27,6 @@ struct EPPPathPrinter : public llvm::ModulePass {
     bool doInitialization(llvm::Module &m) override;
     llvm::StringRef getPassName() const override { return "EPPPathPrinter"; }
 };
-}
+} // namespace epp
 
 #endif

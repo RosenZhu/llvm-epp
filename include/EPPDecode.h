@@ -24,7 +24,7 @@ struct Path {
 
 struct EPPDecode : public llvm::ModulePass {
     static char ID;
-    //std::string filename;
+    // std::string filename;
 
     DenseMap<uint32_t, Function *> FunctionIdToPtr;
     llvm::DenseMap<llvm::Function *, llvm::SmallVector<Path, 16>> DecodeCache;
@@ -38,13 +38,13 @@ struct EPPDecode : public llvm::ModulePass {
     virtual bool runOnModule(llvm::Module &m) override;
     bool doInitialization(llvm::Module &m) override;
 
-    void getPathInfo(uint32_t FunctionId, Path& Info);
+    void getPathInfo(uint32_t FunctionId, Path &Info);
 
     std::pair<PathType, std::vector<llvm::BasicBlock *>>
     decode(llvm::Function &F, llvm::APInt pathID, EPPEncode &E);
 
     llvm::StringRef getPassName() const override { return "EPPDecode"; }
 };
-}
+} // namespace epp
 
 #endif

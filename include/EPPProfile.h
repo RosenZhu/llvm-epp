@@ -29,6 +29,6 @@ struct EPPProfile : public llvm::ModulePass {
     bool doFinalization(llvm::Module &m) override;
     llvm::StringRef getPassName() const override { return "EPPProfile"; }
 };
-}
+} // namespace epp
 
 #endif

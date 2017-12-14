@@ -146,7 +146,7 @@ void interpretResults(Module &module, std::string filename) {
     pm.add(createVerifierPass());
     pm.run(module);
 }
-}
+} // namespace
 
 int main(int argc, char **argv, const char **env) {
     // This boilerplate provides convenient stack traces and clean LLVM exit

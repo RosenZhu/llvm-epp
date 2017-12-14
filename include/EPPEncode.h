@@ -43,5 +43,5 @@ struct EPPEncode : public llvm::FunctionPass {
     void releaseMemory() override;
     llvm::StringRef getPassName() const override { return "EPPEncode"; }
 };
-}
+} // namespace epp
 #endif

@@ -27,7 +27,7 @@ bool BreakSelfLoops(Function &F) {
 
     return Changed;
 }
-}
+} // namespace
 
 /// While BreakCriticalEdges should break most self loops, sometimes it
 /// does not if the self loop does not have a successor apart from itself,
