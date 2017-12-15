@@ -38,7 +38,7 @@ clang -c -g -emit-llvm prog.c \
 
 ## Known Issues 
 
-1. Instrumentation cannot be placed along computed indirect branch target edges. [This](http://blog.llvm.org/2010/01/address-of-label-and-indirect-branches.html) blog post describes the issue under the section "How does this extension interact with critical edge splitting?".
+1. ~~Instrumentation cannot be placed along computed indirect branch target edges. [This](http://blog.llvm.org/2010/01/address-of-label-and-indirect-branches.html) blog post describes the issue under the section "How does this extension interact with critical edge splitting?".~~ LLVM can now split indirect jump edges. I have not tested this yet.  
 
 ## Roadmap
 
