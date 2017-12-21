@@ -31,8 +31,8 @@ using namespace std;
 
 extern cl::opt<bool> dumpGraphs;
 
-bool EPPEncode::doInitialization(Module &m) { return false; }
-bool EPPEncode::doFinalization(Module &m) { return false; }
+bool EPPEncode::doInitialization(Module &M) { return false; }
+bool EPPEncode::doFinalization(Module &M) { return false; }
 
 namespace {
 
@@ -44,9 +44,9 @@ void printCFG(Function &F) {
     FPM.doFinalization();
 }
 
-void dumpDotGraph(StringRef filename, const AuxGraph &AG) {
+void dumpDotGraph(StringRef Filename, const AuxGraph &AG) {
     error_code EC;
-    raw_fd_ostream out(filename, EC, sys::fs::F_Text);
+    raw_fd_ostream out(Filename, EC, sys::fs::F_Text);
     AG.dot(out);
     out.close();
 }
@@ -60,7 +60,7 @@ bool EPPEncode::runOnFunction(Function &F) {
 
 void EPPEncode::releaseMemory() {
     LI = nullptr;
-    numPaths.clear();
+    NumPaths.clear();
     AG.clear();
 }
 
@@ -119,8 +119,8 @@ void EPPEncode::encode(Function &F) {
             for (auto &SE : Succs) {
                 AG[SE]  = pathCount;
                 auto *S = SE->tgt;
-                if (numPaths.count(S) == 0)
-                    numPaths.insert(make_pair(S, APInt(64, 0, true)));
+                if (NumPaths.count(S) == 0)
+                    NumPaths.insert(make_pair(S, APInt(64, 0, true)));
 
                 // This is the only place we need to check for overflow.
                 // If there is an overflow, indicate this by saving 0 as the
@@ -129,10 +129,10 @@ void EPPEncode::encode(Function &F) {
                 // 1
                 // if the entry block is also the exit block.
                 bool Ov   = false;
-                pathCount = pathCount.sadd_ov(numPaths[S], Ov);
+                pathCount = pathCount.sadd_ov(NumPaths[S], Ov);
                 if (Ov) {
-                    numPaths.clear();
-                    numPaths.insert(make_pair(Entry, APInt(64, 0, true)));
+                    NumPaths.clear();
+                    NumPaths.insert(make_pair(Entry, APInt(64, 0, true)));
                     DEBUG(errs()
                           << "Integer Overflow in function " << F.getName());
                     return;
@@ -140,7 +140,7 @@ void EPPEncode::encode(Function &F) {
             }
         }
 
-        numPaths.insert({B, pathCount});
+        NumPaths.insert({B, pathCount});
     }
 
     if (dumpGraphs) {

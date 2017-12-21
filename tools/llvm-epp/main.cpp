@@ -134,7 +134,7 @@ void instrumentModule(Module &module) {
     saveModule(module, inPath);
 }
 
-void interpretResults(Module &module, std::string filename) {
+void interpretResults(Module &module) {
     legacy::PassManager pm;
     pm.add(createLoopSimplifyPass());
     pm.add(new epp::BreakSelfLoopsPass());
@@ -148,7 +148,7 @@ void interpretResults(Module &module, std::string filename) {
 }
 } // namespace
 
-int main(int argc, char **argv, const char **env) {
+int main(int argc, char **argv) {
     // This boilerplate provides convenient stack traces and clean LLVM exit
     // handling. It also initializes the built in support for convenient
     // command line option handling.
@@ -176,7 +176,7 @@ int main(int argc, char **argv, const char **env) {
     }
 
     if (!profile.empty()) {
-        interpretResults(*module, profile.getValue());
+        interpretResults(*module);
     } else {
         instrumentModule(*module);
     }

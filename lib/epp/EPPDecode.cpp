@@ -18,15 +18,6 @@ using namespace llvm;
 using namespace epp;
 using namespace std;
 
-namespace {
-
-// inline bool isExitBlock(BasicBlock *BB) {
-//     if (BB->getTerminator()->getNumSuccessors() == 0)
-//         return true;
-//     return false;
-// }
-}
-
 bool EPPDecode::doInitialization(Module &M) {
     uint32_t Id = 0;
     for (auto &F : M) {
@@ -39,7 +30,7 @@ bool EPPDecode::runOnModule(Module &M) { return false; }
 
 void EPPDecode::getPathInfo(uint32_t FunctionId, Path &Info) {
     auto &F        = *FunctionIdToPtr[FunctionId];
-    EPPEncode &Enc = getAnalysis<EPPEncode>(F);
+    auto &Enc = getAnalysis<EPPEncode>(F);
     auto R         = decode(F, Info.Id, Enc);
     Info.Type      = R.first;
     Info.Blocks    = R.second;
@@ -57,8 +48,9 @@ EPPDecode::decode(Function &F, APInt pathID, EPPEncode &E) {
     vector<EdgePtr> SelectedEdges;
     while (true) {
         Sequence.push_back(Position);
-        if (AG.isExitBlock(Position))
+        if (AG.isExitBlock(Position)) {
             break;
+        }
         APInt Wt(64, 0, true);
         EdgePtr Select = nullptr;
         DEBUG(errs() << Position->getName() << " (\n");
@@ -78,10 +70,11 @@ EPPDecode::decode(Function &F, APInt pathID, EPPEncode &E) {
         pathID -= Wt;
     }
 
-    if (SelectedEdges.empty())
+    if (SelectedEdges.empty()) {
         return {RIRO, Sequence};
+    }
 
-#define SET_BIT(n, x) (n |= 1ULL << x)
+#define SET_BIT(n, x) ((n) |= 1ULL << (x))
     uint64_t Type = 0;
     if (!SelectedEdges.front()->real) {
         SET_BIT(Type, 0);

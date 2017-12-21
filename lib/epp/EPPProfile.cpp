@@ -3,7 +3,6 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/CFG.h"
-//#include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CallSite.h"
@@ -69,7 +68,7 @@ SmallVector<BasicBlock *, 1> getFunctionExitBlocks(Function &F) {
     return R;
 }
 
-void insertInc(BasicBlock *Block, APInt Inc, AllocaInst *Ctr) {
+void insertInc(BasicBlock *Block, const APInt& Inc, AllocaInst *Ctr) {
     if (Inc.ne(APInt(64, 0, true))) {
         //(errs() << "Inserting Increment " << Increment << " "
         //<< addPos->getParent()->getName() << "\n");
@@ -141,7 +140,7 @@ void insertLogPath(BasicBlock *BB, uint64_t FuncId, AllocaInst *Ctr,
     auto *voidTy = Type::getVoidTy(Ctx);
     auto *CtrTy  = Ctr->getAllocatedType();
     auto *FIdArg = ConstantInt::getIntegerValue(CtrTy, APInt(64, FuncId, true));
-    Function *logFun2 = cast<Function>(
+    auto *logFun = cast<Function>(
         M->getOrInsertFunction("__epp_logPath", voidTy, CtrTy, CtrTy));
 
     // We insert the logging function as the first thing in the basic block
@@ -150,7 +149,7 @@ void insertLogPath(BasicBlock *BB, uint64_t FuncId, AllocaInst *Ctr,
     Instruction *logPos    = &*BB->getFirstInsertionPt();
     auto *LI               = new LoadInst(Ctr, "ld.epp.ctr", logPos);
     vector<Value *> Params = {LI, FIdArg};
-    auto *CI               = CallInst::Create(logFun2, Params, "");
+    auto *CI               = CallInst::Create(logFun, Params, "");
     CI->insertAfter(LI);
     (new StoreInst(Zap, Ctr))->insertAfter(CI);
 
@@ -207,7 +206,7 @@ bool EPPProfile::runOnModule(Module &Mod) {
             continue;
 
         auto &Enc     = getAnalysis<EPPEncode>(F);
-        auto NumPaths = Enc.numPaths[&F.getEntryBlock()];
+        auto NumPaths = Enc.NumPaths[&F.getEntryBlock()];
 
         errs() << "- name: " << F.getName() << "\n";
         errs() << "  num_paths: " << NumPaths << "\n";
@@ -307,7 +306,6 @@ void EPPProfile::instrument(Function &F, EPPEncode &Enc) {
     auto *SI = new StoreInst(Zap, Ctr);
     SI->insertAfter(Ctr);
 
-    // saveModule(*M, "test.bc");
 }
 
 char EPPProfile::ID = 0;

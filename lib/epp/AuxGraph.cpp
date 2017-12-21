@@ -23,8 +23,9 @@ SmallVector<BasicBlock *, 32> postOrder(Function &F) {
     }
 
     DEBUG(errs() << "Post Order Blocks: \n");
-    for (auto &POB : PostOrderBlocks)
+    for (auto &POB : PostOrderBlocks) {
         DEBUG(errs() << POB->getName() << " ");
+    }
     DEBUG(errs() << "\n");
 
     return PostOrderBlocks;
@@ -168,8 +169,9 @@ void AuxGraph::dot(raw_ostream &os = errs()) const {
         for (auto &L : EL.getSecond()) {
             os << "\tNode" << EL.getFirst() << " -> Node" << L->tgt
                << " [style=solid,";
-            if (!L->real)
+            if (!L->real) {
                 os << "color=\"red\",";
+            }
             // os << " label=\"" << Weights[L] << "\"];\n";
             os << " label=\""
                << "\"];\n";
@@ -190,8 +192,9 @@ void AuxGraph::dotW(raw_ostream &os = errs()) const {
         for (auto &L : EL.getSecond()) {
             os << "\tNode" << EL.getFirst() << " -> Node" << L->tgt
                << " [style=solid,";
-            if (!L->real)
+            if (!L->real) {
                 os << "color=\"red\",";
+            }
             os << " label=\"" << Weights.at(L) << "\"];\n";
         }
     }

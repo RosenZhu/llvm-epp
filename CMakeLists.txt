@@ -1,14 +1,11 @@
 project(llvm-epp)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.6)
 
 set(PACKAGE_NAME llvm-epp)
 set(PACKAGE_VERSION 1.0)
 set(PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
 set(PACKAGE_BUGREPORT "ska124@sfu.ca")
 
-# LLVM 3.8 downloaded from the releases page is built using the older version
-# of the CXX ABI, here we disable it. When we use a newer version this option
-# will be removed.
 set(CMAKE_CXX_FLAGS "-fno-rtti -std=c++1y -Werror -Wno-deprecated-declarations")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -27,24 +24,22 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
 
-#option(LLVM_ENABLE_CXX11  "Enable C++11" ON)
-
-option(LLVM_INCLUDE_TOOLS "Generate build targets for the LLVM tools." ON)
-option(LLVM_BUILD_TOOLS
-  "Build the LLVM tools. If OFF, just generate build targets." ON)
-
 message("LLVM STATUS:
   Definitions ${LLVM_DEFINITIONS}
   Includes    ${LLVM_INCLUDE_DIRS}
   Libraries   ${LLVM_LIBRARY_DIRS}
   Targets     ${LLVM_TARGETS_TO_BUILD}")
+
 # Now set the LLVM header and library paths:
 include_directories( ${LLVM_INCLUDE_DIRS} )
 link_directories( ${LLVM_LIBRARY_DIRS} )
 add_definitions( ${LLVM_DEFINITIONS} )
 
+option(TIDY_CHECKS "Enable clang-tidy checks" OFF)
 
-
+if(TIDY_CHECKS)
+  set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=-*,modernize-*,performance-*,misc-*")
+endif()
 
 find_program(LIT_COMMAND lit)
 

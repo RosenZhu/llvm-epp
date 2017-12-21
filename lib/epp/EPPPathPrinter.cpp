@@ -30,7 +30,7 @@ bool EPPPathPrinter::doInitialization(Module &M) {
 }
 
 void printPathSrc(vector<BasicBlock *> &blocks, raw_ostream &out,
-                  SmallString<8> prefix) {
+                  const std::string& prefix) {
     unsigned line = 0;
     llvm::StringRef file;
     for (auto *bb : blocks) {
@@ -51,7 +51,7 @@ void printPathSrc(vector<BasicBlock *> &blocks, raw_ostream &out,
 
 bool EPPPathPrinter::runOnModule(Module &M) {
 
-    EPPDecode &D = getAnalysis<EPPDecode>();
+    auto &D = getAnalysis<EPPDecode>();
 
     ifstream InFile(profile.c_str(), ios::in);
     assert(InFile.is_open() && "Could not open file for reading");
@@ -108,7 +108,7 @@ bool EPPPathPrinter::runOnModule(Module &M) {
                 SmallString<16> PathId;
                 P.Id.toStringSigned(PathId, 16);
                 errs() << "  - path: " << PathId << "\n";
-                printPathSrc(P.Blocks, errs(), StringRef("      "));
+                printPathSrc(P.Blocks, errs(), std::string("      "));
             }
         }
     } catch (...) {

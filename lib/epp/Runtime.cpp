@@ -15,7 +15,7 @@ using namespace std;
 
 extern uint32_t EPP(numberOfFunctions);
 
-typedef vector<unordered_map<uint64_t, uint64_t>> TLSDataTy;
+using TLSDataTy = vector<unordered_map<uint64_t, uint64_t>>;
 list<shared_ptr<TLSDataTy>> GlobalEPPDataList;
 
 mutex tlsMutex;
@@ -25,7 +25,6 @@ class EPP(data) {
 
   public:
     void log(uint64_t Val, uint64_t FunctionId) {
-        // cout << "log " << tid << " " << Val << " " << FunctionId << endl;
         (*Ptr)[FunctionId][Val] += 1;
     }
 
@@ -34,14 +33,10 @@ class EPP(data) {
         Ptr = make_shared<TLSDataTy>();
         GlobalEPPDataList.push_back(Ptr);
         // Allocate an unordered_map for each function even though we know it
-        // may not
-        // be used. This is to make the lookup faster at runtime.
+        // may not be used. This is to make the lookup faster at runtime.
         Ptr->resize(EPP(numberOfFunctions));
     }
 };
-
-/// Why is this unique_ptr?
-///
 
 thread_local unique_ptr<EPP(data)> Data = make_unique<EPP(data)>();
 
@@ -50,8 +45,9 @@ extern "C" {
 void EPP(init)() {}
 
 void EPP(logPath)(uint64_t Val, uint64_t FunctionId) {
-    if (Data)
+    if (Data) {
         Data->log(Val, FunctionId);
+    }
 }
 
 void EPP(save)(char *path) {
@@ -62,7 +58,7 @@ void EPP(save)(char *path) {
 
     TLSDataTy Accumulate(EPP(numberOfFunctions));
 
-    for (auto T : GlobalEPPDataList) {
+    for (const auto& T : GlobalEPPDataList) {
         for (uint32_t I = 0; I < T->size(); I++) {
             for (auto &KV : T->at(I)) {
                 Accumulate[I][KV.first] += KV.second;
@@ -75,7 +71,7 @@ void EPP(save)(char *path) {
     // their freq/id. The path printer already sorts by freq.
 
     for (uint32_t I = 0; I < Accumulate.size(); I++) {
-        if (Accumulate[I].size() > 0) {
+        if (!Accumulate[I].empty()) {
             fprintf(fp, "%u %lu\n", I, Accumulate[I].size());
             vector<pair<uint64_t, uint64_t>> Values(Accumulate[I].begin(),
                                                     Accumulate[I].end());

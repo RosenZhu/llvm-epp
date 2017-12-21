@@ -35,8 +35,8 @@ struct EPPDecode : public llvm::ModulePass {
         au.addRequired<EPPEncode>();
     }
 
-    virtual bool runOnModule(llvm::Module &m) override;
-    bool doInitialization(llvm::Module &m) override;
+    virtual bool runOnModule(llvm::Module &M) override;
+    bool doInitialization(llvm::Module &M) override;
 
     void getPathInfo(uint32_t FunctionId, Path &Info);
 

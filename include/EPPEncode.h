@@ -15,7 +15,6 @@
 #include <map>
 #include <unordered_map>
 
-//#include "AltCFG.h"
 #include "AuxGraph.h"
 
 namespace epp {
@@ -25,21 +24,20 @@ struct EPPEncode : public llvm::FunctionPass {
     static char ID;
 
     llvm::LoopInfo *LI;
-    llvm::DenseMap<llvm::BasicBlock *, llvm::APInt> numPaths;
-    // altcfg ACFG;
+    llvm::DenseMap<llvm::BasicBlock *, llvm::APInt> NumPaths;
     AuxGraph AG;
 
     EPPEncode() : llvm::FunctionPass(ID), LI(nullptr) {}
 
-    virtual void getAnalysisUsage(llvm::AnalysisUsage &au) const override {
-        au.addRequired<llvm::LoopInfoWrapperPass>();
-        au.setPreservesAll();
+    virtual void getAnalysisUsage(llvm::AnalysisUsage &AU) const override {
+        AU.addRequired<llvm::LoopInfoWrapperPass>();
+        AU.setPreservesAll();
     }
 
-    virtual bool runOnFunction(llvm::Function &f) override;
-    void encode(llvm::Function &f);
-    bool doInitialization(llvm::Module &m) override;
-    bool doFinalization(llvm::Module &m) override;
+    virtual bool runOnFunction(llvm::Function &F) override;
+    void encode(llvm::Function &F);
+    bool doInitialization(llvm::Module &M) override;
+    bool doFinalization(llvm::Module &M) override;
     void releaseMemory() override;
     llvm::StringRef getPassName() const override { return "EPPEncode"; }
 };

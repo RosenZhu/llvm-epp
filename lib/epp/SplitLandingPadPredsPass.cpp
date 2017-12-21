@@ -12,7 +12,7 @@ namespace {
 void SplitLandingPadPreds(Function &F) {
     for (auto &BB : F) {
         for (auto &I : BB) {
-            if (InvokeInst *II = dyn_cast<InvokeInst>(&I)) {
+            if (auto *II = dyn_cast<InvokeInst>(&I)) {
                 BasicBlock *LPad = II->getUnwindDest();
 
                 // Check if BB->LPad edge is a critical edge.
