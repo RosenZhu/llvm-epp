@@ -30,7 +30,7 @@ bool EPPPathPrinter::doInitialization(Module &M) {
 }
 
 void printPathSrc(vector<BasicBlock *> &blocks, raw_ostream &out,
-                  const std::string& prefix) {
+                  const std::string &prefix) {
     unsigned line = 0;
     llvm::StringRef file;
     for (auto *bb : blocks) {

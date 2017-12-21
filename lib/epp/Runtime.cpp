@@ -58,7 +58,7 @@ void EPP(save)(char *path) {
 
     TLSDataTy Accumulate(EPP(numberOfFunctions));
 
-    for (const auto& T : GlobalEPPDataList) {
+    for (const auto &T : GlobalEPPDataList) {
         for (uint32_t I = 0; I < T->size(); I++) {
             for (auto &KV : T->at(I)) {
                 Accumulate[I][KV.first] += KV.second;

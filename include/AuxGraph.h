@@ -21,7 +21,7 @@ struct Edge {
         : src(from), tgt(to), real(r) {}
 };
 
-typedef std::shared_ptr<Edge> EdgePtr;
+using EdgePtr = std::shared_ptr<Edge>;
 
 // An auxiliary graph representation of the CFG of a function which
 // will be queried online during instrumentation. Edges in the graph

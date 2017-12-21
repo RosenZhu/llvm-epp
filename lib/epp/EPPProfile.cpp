@@ -68,7 +68,7 @@ SmallVector<BasicBlock *, 1> getFunctionExitBlocks(Function &F) {
     return R;
 }
 
-void insertInc(BasicBlock *Block, const APInt& Inc, AllocaInst *Ctr) {
+void insertInc(BasicBlock *Block, const APInt &Inc, AllocaInst *Ctr) {
     if (Inc.ne(APInt(64, 0, true))) {
         //(errs() << "Inserting Increment " << Increment << " "
         //<< addPos->getParent()->getName() << "\n");
@@ -305,7 +305,6 @@ void EPPProfile::instrument(Function &F, EPPEncode &Enc) {
     Ctr->insertBefore(&*F.getEntryBlock().getFirstInsertionPt());
     auto *SI = new StoreInst(Zap, Ctr);
     SI->insertAfter(Ctr);
-
 }
 
 char EPPProfile::ID = 0;

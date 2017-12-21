@@ -29,11 +29,11 @@ bool EPPDecode::doInitialization(Module &M) {
 bool EPPDecode::runOnModule(Module &M) { return false; }
 
 void EPPDecode::getPathInfo(uint32_t FunctionId, Path &Info) {
-    auto &F        = *FunctionIdToPtr[FunctionId];
-    auto &Enc = getAnalysis<EPPEncode>(F);
-    auto R         = decode(F, Info.Id, Enc);
-    Info.Type      = R.first;
-    Info.Blocks    = R.second;
+    auto &F     = *FunctionIdToPtr[FunctionId];
+    auto &Enc   = getAnalysis<EPPEncode>(F);
+    auto R      = decode(F, Info.Id, Enc);
+    Info.Type   = R.first;
+    Info.Blocks = R.second;
 }
 
 pair<PathType, vector<BasicBlock *>>
