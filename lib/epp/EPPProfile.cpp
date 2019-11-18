@@ -77,8 +77,8 @@ void insertInc(BasicBlock *Block, const APInt &Inc, AllocaInst *Ctr) {
 
         Constant *CI =
             ConstantInt::getIntegerValue(Ctr->getAllocatedType(), Inc);
-        auto *BI = BinaryOperator::CreateAdd(LI, CI);
-        BI->insertAfter(LI);
+        auto *BI = BinaryOperator::CreateAdd(LI, CI); //rosen- change to BinaryOperator::Create
+        BI->insertAfter(LI); //BI is the operator add, but also the result of add (the value of add)
         (new StoreInst(BI, Ctr))->insertAfter(BI);
 
         ++NumInstInc;
@@ -112,7 +112,7 @@ BasicBlock *interpose(BasicBlock *BB, BasicBlock *Succ,
         // Hoist all special instructions from the Tgt block
         // to the new block. Rewrite the uses of the old instructions
         // to use the instructions in the new block. This is used when the
-        // edge being split has ehpad destination.
+        // edge being split has ehpad (exception handling) destination.
 
         for (auto &I : vector<BasicBlock::iterator>(
                  Succ->begin(), Succ->getFirstInsertionPt())) {
