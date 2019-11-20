@@ -76,7 +76,7 @@ void insertInc(BasicBlock *Block, const APInt &Inc, AllocaInst *Ctr) {
         auto *LI     = new LoadInst(Ctr, "ld.epp.ctr", addPos);
 
         Constant *CI =
-            ConstantInt::getIntegerValue(Ctr->getAllocatedType(), Inc);
+            ConstantInt::getIntegerValue(Ctr->getAllocatedType(), Inc); //Inc is the edge weight
         auto *BI = BinaryOperator::CreateAdd(LI, CI); //rosen- change to BinaryOperator::Create
         BI->insertAfter(LI); //BI is the operator add, but also the result of add (the value of add)
         (new StoreInst(BI, Ctr))->insertAfter(BI);
@@ -270,11 +270,16 @@ void EPPProfile::instrument(Function &F, EPPEncode &Enc) {
     for (auto &W : Wts) {
         auto &Ptr       = W.first;
         BasicBlock *Src = Ptr->src, *Tgt = Ptr->tgt;
+        /*insert a basic block between Src and Tgt; 
+        the instered block is used to insert "add" instruction*/
         BasicBlock *N = interpose(Src, Tgt);
+        // insert an instruction to add the edge weights
         insertInc(N, W.second, Ctr);
     }
 
     // Get the weights for the segmented edges
+    /* A segmented edge is an edge which exists in the original CFG
+        but is replaced by two edges in the AuxGraph. */
     const auto &SegMap = Enc.AG.getSegmentMap();
 
     for (auto &S : SegMap) {

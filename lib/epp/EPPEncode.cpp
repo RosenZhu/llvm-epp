@@ -45,8 +45,8 @@ void printCFG(Function &F) {
 }
 
 void dumpDotGraph(StringRef Filename, const AuxGraph &AG) {
-    error_code EC;
-    raw_fd_ostream out(Filename, EC, sys::fs::F_Text);
+    std::error_code EC; // rosen-std
+    llvm::raw_fd_ostream out(Filename, EC, llvm::sys::fs::F_Text); //rosen: F_Text=1
     AG.dot(out);
     out.close();
 }
@@ -68,7 +68,7 @@ DenseSet<pair<const BasicBlock *, const BasicBlock *>>
 getBackEdges(BasicBlock *StartBB) {
     SmallVector<std::pair<const BasicBlock *, const BasicBlock *>, 8>
         BackEdgesVec;
-    FindFunctionBackedges(*StartBB->getParent(), BackEdgesVec);
+    llvm::FindFunctionBackedges(*StartBB->getParent(), BackEdgesVec);
     DenseSet<pair<const BasicBlock *, const BasicBlock *>> BackEdges;
 
     for (auto &BE : BackEdgesVec) {
@@ -90,7 +90,7 @@ void EPPEncode::encode(Function &F) {
     for (auto &BB : AG.nodes()) {
         for (auto S = succ_begin(BB), E = succ_end(BB); S != E; S++) {
             if (BackEdges.count(make_pair(BB, *S)) ||
-                LI->getLoopFor(BB) != LI->getLoopFor(*S)) {
+                LI->getLoopFor(BB) != LI->getLoopFor(*S)) {//rosen - why?
                 SegmentEdges.insert({BB, *S});
             }
         }
@@ -100,7 +100,7 @@ void EPPEncode::encode(Function &F) {
         dumpDotGraph("auxgraph-1.dot", AG);
     }
 
-    AG.segment(SegmentEdges);
+    AG.segment(SegmentEdges); //An edge from A->B, is replaced by {A->Exit, Entry->B}.
 
     if (dumpGraphs) {
         dumpDotGraph("auxgraph-2.dot", AG);
@@ -125,7 +125,7 @@ void EPPEncode::encode(Function &F) {
                 // This is the only place we need to check for overflow.
                 // If there is an overflow, indicate this by saving 0 as the
                 // number of paths from the entry block. This is impossible for
-                // a regular CFG where the numpaths from entry would atleast be
+                // a regular CFG where the numpaths from entry would at least be
                 // 1
                 // if the entry block is also the exit block.
                 bool Ov   = false;
